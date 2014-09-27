@@ -4,5 +4,5 @@ all:
 	chmod u+x hide-symlinks
 
 clean:
-	rm hide-symlinks.zip
-	rm hide-symlinks
+	rm -f hide-symlinks.zip
+	rm -f hide-symlinks
