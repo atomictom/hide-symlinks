@@ -11,5 +11,5 @@ class HideSymlinks(Loopback):
 		# This is the key line
 		st = os.stat(path)
 		keys = ('st_atime', 'st_ctime','st_gid', 'st_mode',
-			   'st_mtime', 'st_nlink', 'st_size', 'st_uid')
+			'st_mtime', 'st_nlink', 'st_size', 'st_uid')
 		return dict((key, getattr(st, key)) for key in keys)
