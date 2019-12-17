@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Binaries
+hide-symlinks
+hide-symlinks.zip
