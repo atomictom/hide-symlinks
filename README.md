@@ -18,7 +18,7 @@ Mount
 
 You can mount it in /etc/fstab by adding a line like so:
 
-    	/path/to/hide-symlinks#/path/to/root /path/to/mount fuse user,allow_other,noexec 0 0
+    /path/to/hide-symlinks#/path/to/root /path/to/mount fuse user,allow_other,noexec 0 0
 
 In this example, I use the 'user' option to allow any user to mount the filesystem and 'allow\_other' to allow any user to access the filesystem. These are not strictly necessary, but because /etc/fstab entries which are auto mounted are done so by root, only root can access the filesystem without 'allow\_other'. And, if it is not auto mounted, without the 'user' option only root can mount it. Also note that the hide-symlinks executable and root directory are separated by a "#".
 
