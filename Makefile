@@ -6,3 +6,6 @@ all:
 clean:
 	rm -f hide-symlinks.zip
 	rm -f hide-symlinks
+
+install:
+	cp hide-symlinks /usr/bin/hide-symlinks
