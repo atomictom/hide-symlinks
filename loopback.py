@@ -1,28 +1,26 @@
 #!/usr/bin/env python
+"""A simple FUSE filesystem which just mirrors a given directory."""
 
-from __future__ import with_statement
-
-from errno import EACCES
-from os.path import realpath
-from sys import argv, exit
-from threading import Lock
-
+import errno
 import os
+import os.path
+import threading
 
-from fuse import FUSE, FuseOSError, Operations
+import fuse
 
 
-class Loopback(Operations):
+class Loopback(fuse.Operations):
+    """A simple FUSE-py class for doing a loopback FS."""
     def __init__(self, root):
-        self.root = realpath(root)
-        self.rwlock = Lock()
+        self.root = os.path.realpath(root)
+        self.rwlock = threading.Lock()
 
     def __call__(self, op, path, *args):
         return super(Loopback, self).__call__(op, self.root + path, *args)
 
     def access(self, path, mode):
         if not os.access(path, mode):
-            raise FuseOSError(EACCES)
+            raise fuse.FuseOSError(errno.EACCES)
 
     chmod = os.chmod
     chown = os.chown
@@ -38,8 +36,17 @@ class Loopback(Operations):
 
     def getattr(self, path, fh=None):
         st = os.lstat(path)
-        return dict((key, getattr(st, key)) for key in ('st_atime', 'st_ctime',
-            'st_gid', 'st_mode', 'st_mtime', 'st_nlink', 'st_size', 'st_uid'))
+        keys = (
+            'st_atime',
+            'st_ctime',
+            'st_gid',
+            'st_mode',
+            'st_mtime',
+            'st_nlink',
+            'st_size',
+            'st_uid',
+        )
+        return dict((key, getattr(st, key)) for key in keys)
 
     getxattr = None
 
@@ -71,9 +78,19 @@ class Loopback(Operations):
 
     def statfs(self, path):
         stv = os.statvfs(path)
-        return dict((key, getattr(stv, key)) for key in ('f_bavail', 'f_bfree',
-            'f_blocks', 'f_bsize', 'f_favail', 'f_ffree', 'f_files', 'f_flag',
-            'f_frsize', 'f_namemax'))
+        keys = (
+            'f_bavail',
+            'f_bfree',
+            'f_blocks',
+            'f_bsize',
+            'f_favail',
+            'f_ffree',
+            'f_files',
+            'f_flag',
+            'f_frsize',
+            'f_namemax',
+        )
+        return dict((key, getattr(stv, key)) for key in keys)
 
     def symlink(self, target, source):
         return os.symlink(source, target)
@@ -89,11 +106,3 @@ class Loopback(Operations):
         with self.rwlock:
             os.lseek(fh, offset, 0)
             return os.write(fh, data)
-
-
-if __name__ == '__main__':
-    if len(argv) != 3:
-        print('usage: %s <root> <mountpoint>' % argv[0])
-        exit(1)
-
-    fuse = FUSE(Loopback(argv[1]), argv[2], foreground=True)
